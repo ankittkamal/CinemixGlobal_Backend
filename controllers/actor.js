@@ -19,7 +19,7 @@ exports.createActor = async (req, res) => {
     newActor.avatar = { url, public_id };
   }
   await newActor.save();
-  res.status(201).json(formatActor(actor));
+  res.status(201).json(formatActor(newActor));
 };
 
 // update
