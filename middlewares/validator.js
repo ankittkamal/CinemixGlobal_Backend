@@ -34,3 +34,16 @@ exports.signInValidator = [
   check("email").normalizeEmail().isEmail().withMessage("Email is invalid "),
   check("password").trim().not().isEmpty().withMessage("password is missing!"),
 ];
+exports.actorInfoValidator = [
+  check("name").trim().not().isEmpty().withMessage("Actor name is missing!"),
+  check("about")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("About is a required field!"),
+  check("gender")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Gender is a required field!"),
+];
