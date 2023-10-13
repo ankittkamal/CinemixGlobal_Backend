@@ -5,11 +5,12 @@ const {
   removeActor,
   searchActor,
   getLatestActors,
-  getSingleActors,
+  getSingleActor,
+  getActors,
 } = require("../controllers/actor");
+const { isAuth, isAdmin } = require("../middlewares/auth");
 const { uploadImage } = require("../middlewares/multer");
 const { actorInfoValidator, validate } = require("../middlewares/validator");
-const { isAuth, isAdmin } = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post(
   validate,
   createActor
 );
+
 router.post(
   "/update/:actorId",
   isAuth,
@@ -31,9 +33,11 @@ router.post(
   validate,
   updateActor
 );
+
 router.delete("/:actorId", isAuth, isAdmin, removeActor);
 router.get("/search", isAuth, isAdmin, searchActor);
-router.get("/latest-uploads", isAuth, isAdmin, getLatestActors);
-router.get("/single/:id", getSingleActors);
+router.get("/latest-uploads", getLatestActors);
+router.get("/actors", isAuth, isAdmin, getActors);
+router.get("/single/:id", getSingleActor);
 
 module.exports = router;

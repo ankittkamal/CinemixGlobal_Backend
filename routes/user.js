@@ -1,5 +1,4 @@
 const express = require("express");
-
 const {
   create,
   verifyEmail,
@@ -9,18 +8,18 @@ const {
   resetPassword,
   signIn,
 } = require("../controllers/user");
+const { isAuth } = require("../middlewares/auth");
+const { isValidPassResetToken } = require("../middlewares/user");
 const {
-  userValidator,
+  userValidtor,
   validate,
   validatePassword,
   signInValidator,
 } = require("../middlewares/validator");
-const { isValidPassResetToken } = require("../middlewares/user");
-const { isAuth } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.post("/create", userValidator, validate, create);
+router.post("/create", userValidtor, validate, create);
 router.post("/sign-in", signInValidator, validate, signIn);
 router.post("/verify-email", verifyEmail);
 router.post("/resend-email-verification-token", resendEmailVerificationToken);
@@ -45,7 +44,9 @@ router.get("/is-auth", isAuth, (req, res) => {
       name: user.name,
       email: user.email,
       isVerified: user.isVerified,
+      role: user.role,
     },
   });
 });
+
 module.exports = router;

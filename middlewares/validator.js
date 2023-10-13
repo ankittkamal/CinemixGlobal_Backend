@@ -1,15 +1,17 @@
 const { check, validationResult } = require("express-validator");
+const { isValidObjectId } = require("mongoose");
+const genres = require("../utils/genres");
 
-exports.userValidator = [
+exports.userValidtor = [
   check("name").trim().not().isEmpty().withMessage("Name is missing!"),
-  check("email").normalizeEmail().isEmail().withMessage("Email is invalid "),
+  check("email").normalizeEmail().isEmail().withMessage("Email is invalid!"),
   check("password")
     .trim()
     .not()
     .isEmpty()
-    .withMessage("password is missing!")
+    .withMessage("Password is missing!")
     .isLength({ min: 8, max: 20 })
-    .withMessage("password must be 8 to 20 characters long!"),
+    .withMessage("Password must be 8 to 20 characters long!"),
 ];
 
 exports.validatePassword = [
@@ -23,8 +25,8 @@ exports.validatePassword = [
 ];
 
 exports.signInValidator = [
-  check("email").normalizeEmail().isEmail().withMessage("Email is invalid "),
-  check("password").trim().not().isEmpty().withMessage("password is missing!"),
+  check("email").normalizeEmail().isEmail().withMessage("Email is invalid!"),
+  check("password").trim().not().isEmpty().withMessage("Password is missing!"),
 ];
 
 exports.actorInfoValidator = [
@@ -61,6 +63,7 @@ exports.validateMovie = [
       for (let g of value) {
         if (!genres.includes(g)) throw Error("Invalid genres!");
       }
+
       return true;
     }),
   check("tags")
@@ -71,6 +74,7 @@ exports.validateMovie = [
         if (typeof tag !== "string")
           throw Error("Tags must be an array of strings!");
       }
+
       return true;
     }),
   check("cast")
@@ -78,16 +82,18 @@ exports.validateMovie = [
     .withMessage("Cast must be an array of objects!")
     .custom((cast) => {
       for (let c of cast) {
-        if (!isValidObjectId(c.id)) throw Error("Invalid cast id inside cast!");
+        if (!isValidObjectId(c.actor))
+          throw Error("Invalid cast id inside cast!");
         if (!c.roleAs?.trim()) throw Error("Role as is missing inside cast!");
         if (typeof c.leadActor !== "boolean")
           throw Error(
             "Only accepted boolean value inside leadActor inside cast!"
           );
       }
+
       return true;
     }),
-  check("trailerInfo")
+  check("trailer")
     .isObject()
     .withMessage("trailer must be an object with url and public_id")
     .custom(({ url, public_id }) => {
@@ -101,15 +107,17 @@ exports.validateMovie = [
 
         if (public_id !== publicId)
           throw Error("Trailer public_id is invalid!");
+
         return true;
       } catch (error) {
         throw Error("Trailer url is invalid!");
       }
     }),
-  check("poster").custom((_, { req }) => {
-    if (!req.file) throw Error("Poster file is missing!");
-    return true;
-  }),
+  // check("poster").custom((_, { req }) => {
+  //   if (!req.file) throw Error("Poster file is missing!");
+
+  //   return true;
+  // }),
 ];
 
 exports.validate = (req, res, next) => {
